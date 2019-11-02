@@ -13,7 +13,7 @@ import team25core.Robot;
 import team25core.RobotEvent;
 
 @Autonomous(name = "Stones Detection Test", group = "Team 25")
-public class StoneAutonomous extends Robot {
+public class RobotAutonomous extends Robot {
 
     private final static String TAG = "Jerry";
 
@@ -66,10 +66,10 @@ public class StoneAutonomous extends Robot {
         stoneMidpointTlm = telemetry.addData("Stone Mdpt", "unknown");
 
         sdTask = new StoneDetectionTaskJerry(this, "Webcam1") {
-
+            //starts when you find a skystone
             @Override
             public void handleEvent(RobotEvent e) {
-                StoneDetectionEvent event = (StoneDetectionEvent)e;
+              StoneDetectionEvent event = (StoneDetectionEvent)e;
                 //0 gives you the first stone on list of stones
                 confidence = event.stones.get(0).getConfidence();
                 left = event.stones.get(0).getLeft();
@@ -106,31 +106,37 @@ public class StoneAutonomous extends Robot {
             rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
             rearRight = hardwareMap.get(DcMotor.class,"rearRight");
 
-            drivetrain = new MechanumGearedDrivetrain(360, frontRight, rearRight, frontLeft, rearLeft);
+            drivetrain = new MechanumGearedDrivetrain(360,frontRight, rearRight, frontLeft, rearLeft);
 
             setStoneDetection();
 
         }
-
+    //@Override
 
     public void startStrafing()
     {
-         drivetrain.strafe(SkyStoneConstants25.STRAFE_SPEED);
+        // start looking for stone
+        addTask(sdTask);
+        drivetrain.strafe(SkyStoneConstants25.STRAFE_SPEED);
     }
     public void start()
     {
         DeadReckonPath path = new DeadReckonPath();
 
-        /**
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
-        path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
-        path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
-        path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
-        path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
-         */
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.TURN, 90,1.0);
+        //path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10,1.0);
+
 
         //this.addTask(new DeadReckonTask(this, path, drivetrain));
 
