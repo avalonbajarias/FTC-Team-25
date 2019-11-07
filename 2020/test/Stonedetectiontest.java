@@ -7,7 +7,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import team25core.Robot;
 import team25core.RobotEvent;
-import team25core.StoneDetectionTask;
+import team25core.StoneDetectionTaskJerry;
 
 @Autonomous(name = "Stones Detection Test", group = "Team 25")
 public class Stonedetectiontest extends Robot {
@@ -22,7 +22,7 @@ public class Stonedetectiontest extends Robot {
     private double left;
     private double type;
 
-    StoneDetectionTask mdTask;
+    StoneDetectionTaskJerry mdTask;
 
     @Override
     public void handleEvent(RobotEvent e)
@@ -33,7 +33,7 @@ public class Stonedetectiontest extends Robot {
     @Override
         public void init()
         {
-            mdTask = new StoneDetectionTask(this, "Webcam1") {
+            mdTask = new StoneDetectionTaskJerry(this, "Webcam1") {
                 @Override
                 public void handleEvent(RobotEvent e) {
                     StoneDetectionEvent event = (StoneDetectionEvent)e;
@@ -49,7 +49,7 @@ public class Stonedetectiontest extends Robot {
             };
 
             mdTask.init(telemetry, hardwareMap);
-            mdTask.setDetectionKind(StoneDetectionTask.DetectionKind.EVERYTHING);
+            mdTask.setDetectionKind(StoneDetectionTaskJerry.DetectionKind.EVERYTHING);
 
         }
     @Override

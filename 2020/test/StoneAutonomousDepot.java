@@ -11,7 +11,7 @@ import team25core.DeadReckonTask;
 import team25core.MechanumGearedDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
-import team25core.StoneDetectionTask;
+import team25core.StoneDetectionTaskJerry;
 
 @Autonomous(name = "Stone Autonomous", group = "Team 25")
 public class StoneAutonomousDepot extends Robot {
@@ -32,6 +32,7 @@ public class StoneAutonomousDepot extends Robot {
     private Telemetry.Item stoneTypeTlm;
     private Telemetry.Item stoneMidpointTlm;
     private Telemetry.Item imageMidpointTlm;
+    private Telemetry.Item deBuggingTlm;
 
     private double confidence;
     private double left;
@@ -41,7 +42,7 @@ public class StoneAutonomousDepot extends Robot {
     private double margin;
     private boolean inCenter;
 
-    StoneDetectionTask sdTask;
+    StoneDetectionTaskJerry sdTask;
 
     @Override
     public void handleEvent(RobotEvent e)
@@ -65,7 +66,7 @@ public class StoneAutonomousDepot extends Robot {
         stoneMidpointTlm = telemetry.addData("Stone Mdpt", "unknown");
 
 
-        sdTask = new StoneDetectionTask(this, "Webcam1") {
+        sdTask = new StoneDetectionTaskJerry(this, "Webcam1") {
 
 
             //starts when you find a skystone
@@ -101,7 +102,7 @@ public class StoneAutonomousDepot extends Robot {
         };
         sdTask.init(telemetry, hardwareMap);
         //later will find skystone
-        sdTask.setDetectionKind(StoneDetectionTask.DetectionKind.SKY_STONE_DETECTED);
+        sdTask.setDetectionKind(StoneDetectionTaskJerry.DetectionKind.SKY_STONE_DETECTED);
     }
     @Override
         public void init()
@@ -120,6 +121,7 @@ public class StoneAutonomousDepot extends Robot {
     public void startStrafing()
     {
         //start looking for Skystones
+        deBuggingTlm = telemetry.addData("deBug","starting to strafe");
         addTask(sdTask);
         drivetrain.strafe(SkyStoneConstants25.STRAFE_SPEED);
     }

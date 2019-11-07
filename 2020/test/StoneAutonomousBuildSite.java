@@ -12,10 +12,10 @@ import team25core.GamepadTask;
 import team25core.MechanumGearedDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
-import team25core.StoneDetectionTask;
+import team25core.StoneDetectionTaskJerry;
 
-@Autonomous(name = "SkyStone Autonomous", group = "Team 25")
-public class StoneAutonomous extends Robot {
+@Autonomous(name = "Avalon SkyStone Autonomous2", group = "Team 25")
+public class StoneAutonomousBuildSite extends Robot {
 
 
     private final static String TAG = "Margarita";
@@ -49,7 +49,9 @@ public class StoneAutonomous extends Robot {
     private double margin;
     private boolean inCenter;
 
-    StoneDetectionTask sdTask;
+    DeadReckonPath path;
+
+    StoneDetectionTaskJerry sdTask;
 
     private enum AllianceColor {
         BLUE, // Button X
@@ -118,18 +120,17 @@ public class StoneAutonomous extends Robot {
         imageMidpointTlm = telemetry.addData("Image_Mdpt", "unknown");
         stoneMidpointTlm = telemetry.addData("Stone Mdpt", "unknown");
 
-        sdTask = new StoneDetectionTask(this, "Webcam1") {
+        sdTask = new StoneDetectionTaskJerry(this, "Webcam1") {
             //starts when you find a skystone
             @Override
             public void handleEvent(RobotEvent e) {
-                StoneDetectionTask.StoneDetectionEvent event = (StoneDetectionTask.StoneDetectionEvent) e;
+                StoneDetectionTaskJerry.StoneDetectionEvent event = (StoneDetectionTaskJerry.StoneDetectionEvent) e;
                 //0 gives you the first stone on list of stones
                 confidence = event.stones.get(0).getConfidence();
                 left = event.stones.get(0).getLeft();
 
                 RobotLog.ii(TAG, "Saw: " + event.kind + " Confidence: " + confidence);
                 RobotLog.i("startHandleEvent");
-                handleEvntTlm = telemetry.addData("detecting","unknown");
 
                 imageMidpoint = event.stones.get(0).getImageWidth() / 2.0;
                 stoneMidpoint = (event.stones.get(0).getWidth() / 2.0) + left;
@@ -139,7 +140,7 @@ public class StoneAutonomous extends Robot {
                 imageMidpointTlm.setValue(imageMidpoint);
                 stoneMidpointTlm.setValue(stoneMidpoint);
 
-                if (event.kind == StoneDetectionTask.EventKind.OBJECTS_DETECTED) {
+                if (event.kind == StoneDetectionTaskJerry.EventKind.OBJECTS_DETECTED) {
                     if (Math.abs(imageMidpoint - stoneMidpoint) < margin) {
                         inCenter = true;
                         RobotLog.i("506 Found gold");
@@ -153,7 +154,7 @@ public class StoneAutonomous extends Robot {
 
         sdTask.init(telemetry, hardwareMap);
         //later will find skystone
-        sdTask.setDetectionKind(StoneDetectionTask.DetectionKind.SKY_STONE_DETECTED);
+        sdTask.setDetectionKind(StoneDetectionTaskJerry.DetectionKind.SKY_STONE_DETECTED);
 
     }
     @Override
@@ -168,6 +169,9 @@ public class StoneAutonomous extends Robot {
         drivetrain.encodersOn();
         drivetrain.resetEncoders();
 
+        path = new DeadReckonPath();
+        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 30,.75);
+
         //initializing gamepad variables
         allianceColor = allianceColor.DEFAULT;
         gamepad = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
@@ -177,7 +181,7 @@ public class StoneAutonomous extends Robot {
         telemetry.setAutoClear(false);
         allianceTlm = telemetry.addData("ALLIANCE", "Unselected (X-blue /B-red)");
         positionTlm = telemetry.addData("POSITION", "Unselected (Y-build/A-depot)");
-
+        handleEvntTlm = telemetry.addData("detecting","unknown");
         setStoneDetection();
     }
 
@@ -189,18 +193,19 @@ public class StoneAutonomous extends Robot {
         drivetrain.strafe(SkyStoneConstants25.STRAFE_SPEED);
     }
 
+    public void parkUnderBridge(DeadReckonPath path)
+    {
+        //go park under skybridge
+        this.addTask(new DeadReckonTask(this, path, drivetrain));
+
+    }
+
     @Override
     public void start()
     {
-        DeadReckonPath path = new DeadReckonPath();
+
         //this.addTask(new DeadReckonTask(this, path, drivetrain));
 
-        /*path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
-        path.addSegment(DeadReckonPath.SegmentType.TURN, 90, 1.0);
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
-        path.addSegment(DeadReckonPath.SegmentType.TURN, 90, 1.0);
-        path.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 1.0);
-        path.addSegment(DeadReckonPath.SegmentType.TURN, 90, 1.0); */
 
 
 
@@ -209,9 +214,23 @@ public class StoneAutonomous extends Robot {
          * handleEvent() for task specific event handlers.
          */
         //this.addTask(new DeadReckonTask(this, path, drivetrain));
-        RobotLog.i("start: before startStrafing");
-        loggingTlm = telemetry.addData("log", "unknown");
-        startStrafing();
+
+        parkUnderBridge(path);
+
+        /*
+
+        if (robotPosition == RobotPosition.BUILD_SITE)
+        {
+
+
+        }
+        else if (robotPosition == RobotPosition.DEPOT)
+        {
+            RobotLog.i("start: before startStrafing");
+            loggingTlm = telemetry.addData("log","unknown");
+            startStrafing();
+        } */
+
 
     }
 }
